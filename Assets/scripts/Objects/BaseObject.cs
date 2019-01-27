@@ -35,9 +35,12 @@ public class BaseObject : MonoBehaviour
     public bool isSlug { get { return slugObject != null; }}
     public bool isShell { get { return shellObject != null; }}
     public bool isExit { get { return exitObject != null; }}
-
+    
     void Awake()
     {
+
+        GameManager.Instance.RegisterObject(this);
+
         activatableObject = GetComponent<ActivatableObject>();
         gridObject = GetComponent<GridObject>();
         collisionObject = GetComponent<CollisionObject>();
@@ -48,8 +51,6 @@ public class BaseObject : MonoBehaviour
         interactionComponents = GetComponents<IInteractable>();
         playerObject = GetComponent<PlayerObject>();
         storableComponents = GetComponents<IStorable>();
-
-        GameManager.Instance.RegisterObject(this);
     }
 
 }

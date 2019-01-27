@@ -11,7 +11,9 @@ public class PlayerObject : MonoBehaviour, IStorable
     public GridObject gridObject;
     [HideInInspector]
     public BaseObject baseObject;
-    public SpriteRenderer shellSprite;
+    public GameObject shellSprite;
+
+    public Animator animator;
 
     public bool hasShell = false;
     
@@ -21,6 +23,14 @@ public class PlayerObject : MonoBehaviour, IStorable
         gridObject = GetComponent<GridObject>();
     }
 
+    public void AnimatorShellGet() {
+        animator.SetTrigger("GetShell");
+    }
+
+    public void AnimatorMove() {
+        animator.SetTrigger("Move");
+    }
+
     public List<float> GetData(){
         return new List<float>{hasShell ? 1.0f : 0.0f};
     }
@@ -28,6 +38,6 @@ public class PlayerObject : MonoBehaviour, IStorable
         hasShell = newData[0] > 0.5f;
     }
     public void ApplyData(float t){
-        // shellSprite.active = hasShell;
+        shellSprite.gameObject.SetActive(hasShell);
     }
 }

@@ -9,6 +9,7 @@ public class PlayerAnimationObject : MonoBehaviour, IStorable
     public Transform AnimationPivot;
     public Animator PlayerAnimator;
 
+    float modifier = 1.0f;
 
 
     public List<float> GetData(){
@@ -18,10 +19,13 @@ public class PlayerAnimationObject : MonoBehaviour, IStorable
         facingRight = newData[0] > 0.5f;
     }
     public void ApplyData(float t) {
-        float modifier = facingRight ? 1.0f : -1.0f;
-        AnimationPivot.localScale = new Vector3(modifier * Mathf.Abs(AnimationPivot.localScale.x), AnimationPivot.localScale.y, AnimationPivot.localScale.z);
+        modifier = facingRight ? 1.0f : -1.0f;
     }
     
+    public void LateUpdate() {
+
+        AnimationPivot.localScale = new Vector3(modifier * Mathf.Abs(AnimationPivot.localScale.x), AnimationPivot.localScale.y, AnimationPivot.localScale.z);
+    }
     
     public void ApplySquash() {
 

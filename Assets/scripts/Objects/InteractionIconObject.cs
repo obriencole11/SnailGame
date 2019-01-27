@@ -16,6 +16,11 @@ public class InteractionIconObject : MonoBehaviour, IInteractable
     }
 
     void Update() {
+
+        if (GameManager.Instance.playerObject == null) {
+            return;
+        }
+
         GridCell cell = GameManager.Instance.playerObject.gridObject.currentCell;
         if (cell.left == gridObject.currentCell) {
             SetIcon(GameManager.Instance.settings.leftArrow);

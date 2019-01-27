@@ -25,6 +25,10 @@ public class StateManager : Singleton<StateManager>
         stateHistory.Add(newState);
     }
 
+    public void ClearState() {
+        stateHistory = new List<Dictionary<IStorable, List<float>>>();
+    }
+
     public void LoadState(int index)
     {
         Dictionary<IStorable, List<float>> newState = stateHistory[index];

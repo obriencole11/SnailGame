@@ -35,6 +35,8 @@ public class ActivatableObject : MonoBehaviour, IStorable
 
     public void ApplyData(float t)
     {
-        gameObject.SetActive(active);
+        if (t >= 1.0f) {
+            gameObject.SetActive(active);
+        }
     }
 }

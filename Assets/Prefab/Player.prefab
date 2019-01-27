@@ -106,7 +106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openTime: 3
   easeOut: 1
-  maxSize: 25
+  maxSize: 20
 --- !u!1 &8265987527781072746
 GameObject:
   m_ObjectHideFlags: 0
@@ -279,6 +279,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridObject: {fileID: 0}
   baseObject: {fileID: 0}
+  shellSprite: {fileID: 1216955578188181540}
+  animator: {fileID: 9122191284173178149}
   hasShell: 0
 --- !u!114 &8265987527793073296
 MonoBehaviour:
@@ -350,6 +352,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8265987528220646691}
+  - component: {fileID: 9122191284173178149}
   m_Layer: 0
   m_Name: PlayerPivot
   m_TagString: Untagged
@@ -374,6 +377,25 @@ Transform:
   m_Father: {fileID: 8265987527793073303}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+--- !u!95 &9122191284173178149
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8265987528220646690}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9f3573ab0552648829964a614e4e772e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &8265987529092081404
 GameObject:
   m_ObjectHideFlags: 0
@@ -415,6 +437,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ShellSprite
+      objectReference: {fileID: 0}
+    - target: {fileID: 3468347541926176249, guid: e5730b763a9554820bb76904c30bf273,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8611049788614926161, guid: e5730b763a9554820bb76904c30bf273,
         type: 3}
@@ -479,10 +506,16 @@ PrefabInstance:
     - target: {fileID: 1039649159989275423, guid: e5730b763a9554820bb76904c30bf273,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e5730b763a9554820bb76904c30bf273, type: 3}
+--- !u!1 &1216955578188181540 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3468347541926176249, guid: e5730b763a9554820bb76904c30bf273,
+    type: 3}
+  m_PrefabInstance: {fileID: 2360296391488427485}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6287567383231302284 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8611049788614926161, guid: e5730b763a9554820bb76904c30bf273,

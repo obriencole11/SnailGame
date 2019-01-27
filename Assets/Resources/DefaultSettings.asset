@@ -18,3 +18,5 @@ MonoBehaviour:
   downArrow: {fileID: 21300000, guid: 8110e5c7673a84b8ba2b817285ad45ff, type: 3}
   leftArrow: {fileID: 21300000, guid: a2d2b52ce57f64aabbe66ed3d9901a4a, type: 3}
   rightArrow: {fileID: 21300000, guid: ad0df1872f256411797cfa49fc93aeb4, type: 3}
+  AudioSource: {fileID: 3419803044262768264, guid: ce6cdb1f97f004302948ea25f8ec9aa3,
+    type: 3}

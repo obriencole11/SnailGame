@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 
@@ -13,6 +14,9 @@ public class GameManager : Singleton<GameManager>
     bool animating = false;
     float blendValue = 0.0f;
     bool acceptInput = true;
+
+    float loadTimer = 0.0f;
+    bool loading = false;
 
     [HideInInspector]
     public List<BaseObject> sceneObjects = new List<BaseObject>();
@@ -36,31 +40,67 @@ public class GameManager : Singleton<GameManager>
     public void RegisterObject(BaseObject baseObject) {
 
         sceneObjects.Add(baseObject);
-        if (baseObject.hasGridObject) {
-            gridObjects.Add(baseObject);
+    }
+
+    public bool isIntro = false;
+    public bool isOutro = false;
+    public float introTimer = 0.0f;
+    public TitleObject titleObject;
+
+    public DialogueCanvasObject dialogueCanvas;
+
+
+    public void InitializeObjects() {
+        foreach (BaseObject baseObject in sceneObjects) {
+
+            if (baseObject.hasGridObject) {
+                gridObjects.Add(baseObject);
+            }
+            if (baseObject.isCollidable) {
+                collisionObjects.Add(baseObject);
+            }
+            if (baseObject.isInteractable) {
+                interactionObjects.Add(baseObject);
+            }
+            if (baseObject.isActivatable) {
+                activatableObjects.Add(baseObject);
+            }
+            if (baseObject.isTile) {
+                tileObjects.Add(baseObject);
+            }
+            if (baseObject.isPlayer) {
+                playerObject = baseObject;
+            }
+            if (baseObject.storableComponents.Length > 0) {
+                storableObjects.Add(baseObject);
+            }
         }
-        if (baseObject.isCollidable) {
-            collisionObjects.Add(baseObject);
-        }
-        if (baseObject.isInteractable) {
-            interactionObjects.Add(baseObject);
-        }
-        if (baseObject.isActivatable) {
-            activatableObjects.Add(baseObject);
-        }
-        if (baseObject.isTile) {
-            tileObjects.Add(baseObject);
-        }
-        if (baseObject.isPlayer) {
-            playerObject = baseObject;
-        }
-        if (baseObject.storableComponents.Length > 0) {
-            storableObjects.Add(baseObject);
-        }
+    }
+
+    AudioSource backgroundAudio;
+    float fadeInTimer = 0.0f;
+
+    void Awake() {
+        settings = Resources.Load<SettingsAsset>("DefaultSettings");
+
+        if (Application.loadedLevel == 0) {
+            isIntro = true;
+        } 
+
+        GameObject audioObject = Instantiate(settings.AudioSource) as GameObject;
+        backgroundAudio = audioObject.GetComponent<AudioSource>();
+        DontDestroyOnLoad(audioObject);
     }
 
     void Start() {
 
+        InitializeScene();
+        SceneManager.sceneLoaded += OnLoad;
+        
+    }
+
+    void InitializeScene() {
+        
         // Generate a slime for every square
         GameObject slimeParent = new GameObject();
         slimeParent.name = "Slimes";
@@ -71,14 +111,74 @@ public class GameManager : Singleton<GameManager>
                 slime.transform.SetParent(slimeParent.transform);
             }
         }
+        InitializeObjects();
 
         GridManager.Instance.UpdateGridObjects();
+
+        StateManager.Instance.ClearState();
         StateManager.Instance.SaveState();
-        
     }
 
+    void OnLoad(Scene scene, LoadSceneMode mode) {
+
+        loading = false;
+        loadTimer = 0.0f;
+
+        activatableObjects = new List<BaseObject>();
+        gridObjects = new List<BaseObject>();
+        collisionObjects = new List<BaseObject>();
+        interactionObjects = new List<BaseObject>();
+        attachmentObjects = new List<BaseObject>();
+        storableObjects = new List<BaseObject>();
+        tileObjects = new List<BaseObject>();
+
+        acceptInput = true;
+
+        InitializeScene();
+    }
+
+    float ggjStart = 0.25f;
+    float ggjFadeOut = 3.0f;
+    float titleStart = 4.0f;
+    float titleFadeOut = 6.25f;
+
+    float controlTimer = 0.0f;
+
     void Update()
-    {   
+    {       
+        if (fadeInTimer < 1.0f) {
+            fadeInTimer += Time.deltaTime / 5.0f;
+            backgroundAudio.volume = Mathf.Lerp(0.0f, 0.5f, Mathf.Clamp01(fadeInTimer));
+        }
+
+        if (isIntro) {
+            introTimer += Time.deltaTime;
+
+            if (introTimer < ggjFadeOut) {
+                titleObject.FadeInGGJLogo(introTimer - ggjStart);
+            } else if (introTimer >= ggjFadeOut) {
+                titleObject.FadeOutGGJLogo(introTimer - ggjFadeOut);
+            }
+
+            if (introTimer < titleFadeOut) {
+                titleObject.FadeInLogo(introTimer - titleStart);
+            } else if (introTimer > titleFadeOut) {
+                titleObject.FadeOutLogo(introTimer - titleFadeOut);
+            }
+
+            if (introTimer > titleFadeOut + 1.0f) {
+                isIntro = false;
+            }
+
+            return;
+        } else if (Application.loadedLevel == 0 ) {
+            controlTimer += Time.deltaTime;
+            if (controlTimer > 1.0f) {
+                titleObject.FadeInControls(controlTimer - 1.0f);
+                titleObject.FadeInUndoControls(controlTimer - 1.0f);
+            }
+        }
+
 
         // Animate state
         if (animating == true)
@@ -101,6 +201,14 @@ public class GameManager : Singleton<GameManager>
             }
         }
 
+        if (loading) {
+            loadTimer += Time.deltaTime;
+            if (loadTimer > 3.0f) {
+                int i = Application.loadedLevel;
+                SceneManager.LoadScene(i + 1);
+            }
+        }
+
         // Handle Input
         bool inputUp = Input.GetButtonDown("Up");
         bool inputDown = Input.GetButtonDown("Down");
@@ -109,6 +217,8 @@ public class GameManager : Singleton<GameManager>
         bool inputUndo = Input.GetButtonDown("Undo");
         bool inputReset = Input.GetButtonDown("Reset");
         bool input = inputUp || inputDown || inputLeft || inputRight;
+
+        bool getShell = false;
 
         // Handle State
         if (!acceptInput) {return;}
@@ -135,13 +245,15 @@ public class GameManager : Singleton<GameManager>
                     if (baseObject.isShell) {
                         if (playerObject.playerObject.hasShell == false) {
                             sceneChanged = true;
+                            getShell = true;
                         } else {
                             playerObject.gridObject.nextCell = playerObject.gridObject.currentCell;
                         }
                     } else if (baseObject.isSlug){
                         if (playerObject.playerObject.hasShell == true) {
                             sceneChanged = true;
-                            baseObject.activatableObject.SetActivated(false);
+                            baseObject.activatableObject.active = false;
+                            baseObject.slugObject.AddShell();
                             playerObject.playerObject.hasShell = false;
                             playerObject.gridObject.nextCell = playerObject.gridObject.currentCell;
                         } else {
@@ -192,6 +304,11 @@ public class GameManager : Singleton<GameManager>
             }
 
             if (playerObject.gridObject.isMoving) {
+                if (getShell) {
+                    playerObject.playerObject.AnimatorShellGet();
+                } else {
+                    playerObject.playerObject.AnimatorMove();
+                }
                 sceneChanged = true;
             }
 
@@ -214,22 +331,30 @@ public class GameManager : Singleton<GameManager>
             GridManager.Instance.UpdateGridObjects();
             animating = true;
             blendValue = 0.0f;
+            playerObject.playerObject.AnimatorMove();
             
         } else if (inputReset) {
             StateManager.Instance.ResetState();
             GridManager.Instance.UpdateGridObjects();
             animating = true;
             blendValue = 1.0f;
+            playerObject.playerObject.AnimatorMove();
         }
 
     }
 
     void LoadNextLevel() {
-
+        
+        sceneObjects = new List<BaseObject>();
+        loadTimer = 0.0f;
+        loading = true;
     }
 
     public bool LevelComplete() {
 
+        if (playerObject == null) {
+            return false;
+        }
         
         foreach (BaseObject baseObject in sceneObjects) {
             if (baseObject.activatableObject.IsActive()) {

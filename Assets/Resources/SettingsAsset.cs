@@ -10,4 +10,5 @@ public class SettingsAsset : ScriptableObject
     public Sprite downArrow;
     public Sprite leftArrow;
     public Sprite rightArrow;
+    public GameObject AudioSource;
 }

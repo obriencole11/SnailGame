@@ -15,8 +15,22 @@ public class Pinhole : MonoBehaviour
     void Awake() {
         startPosition = transform.position;
     }
+
+    void Start() {
+
+        if (GameManager.Instance.isIntro) {
+            transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+        }
+    }
     
     void Update() {
+
+        if (GameManager.Instance.isIntro) {
+            return;
+        }
+
+        easeOut = !GameManager.Instance.LevelComplete();
+
 
         if (easeOut) {
 
