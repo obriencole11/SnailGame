@@ -5,79 +5,61 @@ using UnityEngine;
 [RequireComponent(typeof(BaseObject))]
 public class GridObject : MonoBehaviour, IStorable
 {
-    public GridCell position { get { return new GridCell(x, y);  } }
-    public int x
-    {
-        get
-        {
-            return (int)Mathf.Round(transform.position.x);
-        }
-    }
-
-    public int y
-    {
-        get
-        {
-            return (int)Mathf.Round(transform.position.z);
-        }
-    }
-
-    public List<float> previousData;
-    public List<float> currentData;
-    public List<float> nextData;
-    public BaseObject baseObject;
-
+    
+    [HideInInspector]
+    public GridCell previousCell;
+    [HideInInspector]
+    public GridCell currentCell;
+    [HideInInspector]
+    public GridCell nextCell;
 
     void Awake()
     {
-        currentData = new List<float> { x, y };
-        previousData = new List<float> { x, y };
-        nextData = new List<float> { x, y };
-
-        baseObject = GetComponent<BaseObject>();
-        GameManager.Instance.gridObjects.Add(this);
+        currentCell = GridCell.FromPosition(transform.position);
+        previousCell = GridCell.FromPosition(transform.position);
+        nextCell = GridCell.FromPosition(transform.position);
     }
+
+    public bool isMoving { get { return currentCell != nextCell; }}
 
     public void MoveUp()
     {
-        nextData = new List<float> { currentData[0], currentData[1] + 1 };
+        nextCell = currentCell.up;
     }
 
     public void MoveDown()
     {
-        nextData = new List<float> { currentData[0], currentData[1] - 1 };
+        nextCell = currentCell.down;
     }
 
     public void MoveLeft()
     {
-        nextData = new List<float> { currentData[0] - 1, currentData[1] };
+        nextCell = currentCell.left;
     }
 
     public void MoveRight()
     {
-        nextData = new List<float> { currentData[0] + 1, currentData[1] };
+        nextCell = currentCell.right;
     }
 
     public List<float> GetData()
     {
-        return currentData;
+        return new List<float>{(float)currentCell.x, (float)currentCell.y};
     }
 
     public void SetData(List<float> newData)
     {
-        previousData = currentData;
-        currentData = newData;
+        previousCell = currentCell;
+        currentCell = new GridCell((int)newData[0], (int)newData[1]);
     }
 
-    public void LerpData(float t)
+    public void ApplyData(float t = 1.0f)
     {
-        List<float> newData = new List<float>
-        {
-            Mathf.Lerp(previousData[0], currentData[0], t),
-            Mathf.Lerp(previousData[1], currentData[1], t),
-        };
-
-        transform.position = new Vector3(newData[0], transform.position.y, newData[1]);
+        transform.position = new Vector3 (
+            Mathf.Lerp((float)previousCell.x, (float)currentCell.x, t),
+            transform.position.y,
+            Mathf.Lerp((float)previousCell.y, (float)currentCell.y, t)
+        );
     }
 
 }

@@ -2,37 +2,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BaseObject : MonoBehaviour, IStorable
+public class BaseObject : MonoBehaviour
 {
-    /// <summary>
-    /// The base of all puzzle gameObjects.
-    /// This stores active/inactive values 
-    /// as well as serving as a nexus for other components.
-    /// </summary>
+    
+    [HideInInspector]
+    public ActivatableObject activatableObject;
+    [HideInInspector]
+    public GridObject gridObject;
+    [HideInInspector]
+    public CollisionObject collisionObject;
+    [HideInInspector]
+    public AttachmentObject attachmentObject;
+    [HideInInspector]
+    public InteractionObject interactionObject;
+    [HideInInspector]
+    public PlayerObject playerObject;
+    [HideInInspector]
+    public IStorable[] storableComponents;
 
-    public bool active = true;
-    public List<Component> components;
-    public List<IStorable> storableComponents;
+    public bool isActivatable { get { return activatableObject != null; }}
+    public bool hasGridObject { get { return gridObject != null; }}
+    public bool isCollidable { get { return collisionObject != null; }}
+    public bool isInteractable { get { return interactionObject != null; }}
+    public bool isPlayer { get { return playerObject != null; }}
+    public bool isAttachable { get { return attachmentObject != null; }}
 
     void Awake()
     {
-        GameManager.Instance.sceneObjects.Add(this);
-        storableComponents = new List<IStorable>(GetComponents<IStorable>());
-    }
+        activatableObject = GetComponent<ActivatableObject>();
+        gridObject = GetComponent<GridObject>();
+        collisionObject = GetComponent<CollisionObject>();
+        attachmentObject = GetComponent<AttachmentObject>();
+        interactionObject = GetComponent<InteractionObject>();
+        playerObject = GetComponent<PlayerObject>();
+        storableComponents = GetComponents<IStorable>();
 
-    public List<float> GetData()
-    {
-        return new List<float> { active ? 1.0f : 0.0f };
-    }
-
-    public void SetData(List<float> data)
-    {
-        active = data[0] == 1.0f;
-    }
-
-    public void LerpData(float t)
-    {
-        return;
+        GameManager.Instance.RegisterObject(this);
     }
 
 }

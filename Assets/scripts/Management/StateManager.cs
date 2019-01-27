@@ -14,7 +14,7 @@ public class StateManager : Singleton<StateManager>
     {
         Dictionary<IStorable, List<float>> newState = new Dictionary<IStorable, List<float>>();
 
-        foreach (BaseObject baseObject in GameManager.Instance.sceneObjects)
+        foreach (BaseObject baseObject in GameManager.Instance.storableObjects)
         {
             foreach (IStorable storable in baseObject.storableComponents)
             {
@@ -22,7 +22,6 @@ public class StateManager : Singleton<StateManager>
             }
         }
 
-        // Only update state if it changed
         stateHistory.Add(newState);
     }
 
@@ -33,6 +32,20 @@ public class StateManager : Singleton<StateManager>
         foreach (KeyValuePair<IStorable, List<float>> storableState in newState)
         {
             storableState.Key.SetData(storableState.Value);
+        }
+
+        foreach (BaseObject baseObject in GameManager.Instance.sceneObjects) {
+            bool inHistory = false;
+            foreach (IStorable storable in baseObject.GetComponents<IStorable>()) {
+                if (newState.ContainsKey(storable)) {
+                    inHistory = true;
+                    break;
+                }
+            }
+
+            if (!inHistory) {
+                baseObject.activatableObject.SetActive(false);
+            }
         }
 
         stateHistory.Add(newState);
@@ -47,6 +60,20 @@ public class StateManager : Singleton<StateManager>
         foreach (KeyValuePair<IStorable, List<float>> storableState in newState)
         {
             storableState.Key.SetData(storableState.Value);
+        }
+
+        foreach (BaseObject baseObject in GameManager.Instance.sceneObjects) {
+            bool inHistory = false;
+            foreach (IStorable storable in baseObject.GetComponents<IStorable>()) {
+                if (newState.ContainsKey(storable)) {
+                    inHistory = true;
+                    break;
+                }
+            }
+
+            if (!inHistory) {
+                baseObject.activatableObject.SetActive(false);
+            }
         }
     }
 
