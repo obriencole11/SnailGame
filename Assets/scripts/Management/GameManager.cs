@@ -142,6 +142,7 @@ public class GameManager : Singleton<GameManager>
                         if (playerObject.playerObject.hasShell == true) {
                             sceneChanged = true;
                             baseObject.activatableObject.SetActivated(false);
+                            playerObject.playerObject.hasShell = false;
                             playerObject.gridObject.nextCell = playerObject.gridObject.currentCell;
                         } else {
                             playerObject.gridObject.nextCell = playerObject.gridObject.currentCell;

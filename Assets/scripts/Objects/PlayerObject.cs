@@ -11,6 +11,7 @@ public class PlayerObject : MonoBehaviour, IStorable
     public GridObject gridObject;
     [HideInInspector]
     public BaseObject baseObject;
+    public SpriteRenderer shellSprite;
 
     public bool hasShell = false;
     
@@ -27,6 +28,6 @@ public class PlayerObject : MonoBehaviour, IStorable
         hasShell = newData[0] > 0.5f;
     }
     public void ApplyData(float t){
-
+        // shellSprite.active = hasShell;
     }
 }

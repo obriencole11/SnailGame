@@ -1,13 +1,12 @@
 fileFormatVersion: 2
-guid: 442d38baa671244ff8160d8ef2996b0f
+guid: d9d96cca8ac4341a6b80e068dca6cf9a
 TextureImporter:
   fileIDToRecycleName:
-    21300000: snailnpc1_0
-    21300002: snailnpc1_1
-    21300004: snailnpc1_2
-    21300006: snailnpc1_3
-    21300008: snailnpc1_4
-    21300010: snailnpc1_5
+    21300000: snailnpc2_0
+    21300002: snailnpc2_1
+    21300004: snailnpc2_2
+    21300006: snailnpc2_3
+    21300008: snailnpc2_4
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -90,7 +89,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: snailnpc1_0
+      name: snailnpc2_0
       rect:
         serializedVersion: 2
         x: 0
@@ -104,13 +103,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aadb30a368d144e05b9ad1fb1198f949
+      spriteID: aae60a2960f84413b99000f159709a51
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: snailnpc1_1
+      name: snailnpc2_1
       rect:
         serializedVersion: 2
         x: 1024
@@ -124,13 +123,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a81a5160228a84301b78a6556dc599da
+      spriteID: 727a8ef87f62e4a0bad4a0c87deff906
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: snailnpc1_2
+      name: snailnpc2_2
       rect:
         serializedVersion: 2
         x: 2048
@@ -144,13 +143,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 307521daf7dff4a40a564cd770d6a0c0
+      spriteID: 888a545b639764c778ab9b88a1051481
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: snailnpc1_3
+      name: snailnpc2_3
       rect:
         serializedVersion: 2
         x: 3072
@@ -164,13 +163,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b960746ae593f474fb357b53dd613d35
+      spriteID: ea05b400651a1457aa6bf00851a6aebe
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: snailnpc1_4
+      name: snailnpc2_4
       rect:
         serializedVersion: 2
         x: 0
@@ -184,27 +183,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5fcfeb0b8304549ffaf1a5987ac1f553
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: snailnpc1_5
-      rect:
-        serializedVersion: 2
-        x: 1024
-        y: 0
-        width: 1024
-        height: 1024
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: daa2a51d2675c4aa8a1db05cfbd11f90
+      spriteID: 59b1601e650124fc9a52db188723ffca
       vertices: []
       indices: 
       edges: []
@@ -212,7 +191,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e23eaba925b449ba8c6ab3d3fcb0385
+    spriteID: f562c8c08bdc64eb8bba3e7675289a6d
     vertices: []
     indices: 
     edges: []
