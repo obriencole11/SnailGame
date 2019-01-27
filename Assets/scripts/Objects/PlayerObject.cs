@@ -4,8 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(BaseObject))]
 [RequireComponent(typeof(GridObject))]
-[RequireComponent(typeof(AttachmentObject))]
-public class PlayerObject : MonoBehaviour
+public class PlayerObject : MonoBehaviour, IStorable
 {
 
     [HideInInspector]
@@ -13,22 +12,21 @@ public class PlayerObject : MonoBehaviour
     [HideInInspector]
     public BaseObject baseObject;
 
-    [HideInInspector]
-    public AttachmentObject attachmentObject;
     public bool hasShell = false;
     
     protected void Awake()
     {
         baseObject = GetComponent<BaseObject>();
         gridObject = GetComponent<GridObject>();
-        attachmentObject = GetComponent<AttachmentObject>();
     }
 
-    public void AddShell() {
-
+    public List<float> GetData(){
+        return new List<float>{hasShell ? 1.0f : 0.0f};
     }
-
-    public void RemoveShell() {
+    public void SetData(List<float> newData, List<float> previousData=null){
+        hasShell = newData[0] > 0.5f;
+    }
+    public void ApplyData(float t){
 
     }
 }

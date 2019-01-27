@@ -11,6 +11,6 @@ public interface IStorable
     /// </summary>
 
     List<float> GetData(); // Returns the current state of the object
-    void SetData(List<float> newData); // Sets the current state of the object
+    void SetData(List<float> newData, List<float> previousData=null); // Sets the current state of the object
     void ApplyData(float t); // Lerps the object between its previous data and its current data
 }

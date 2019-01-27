@@ -12,6 +12,7 @@ public class GameManager : Singleton<GameManager>
 
     bool animating = false;
     float blendValue = 0.0f;
+    bool acceptInput = true;
 
     [HideInInspector]
     public List<BaseObject> sceneObjects = new List<BaseObject>();
@@ -29,6 +30,8 @@ public class GameManager : Singleton<GameManager>
     public List<BaseObject> attachmentObjects = new List<BaseObject>();
     [HideInInspector]
     public List<BaseObject> storableObjects = new List<BaseObject>();
+    [HideInInspector]
+    public List<BaseObject> tileObjects = new List<BaseObject>();
 
     public void RegisterObject(BaseObject baseObject) {
 
@@ -45,8 +48,8 @@ public class GameManager : Singleton<GameManager>
         if (baseObject.isActivatable) {
             activatableObjects.Add(baseObject);
         }
-        if (baseObject.isAttachable) {
-            attachmentObjects.Add(baseObject);
+        if (baseObject.isTile) {
+            tileObjects.Add(baseObject);
         }
         if (baseObject.isPlayer) {
             playerObject = baseObject;
@@ -57,8 +60,21 @@ public class GameManager : Singleton<GameManager>
     }
 
     void Start() {
+
+        // Generate a slime for every square
+        GameObject slimeParent = new GameObject();
+        slimeParent.name = "Slimes";
+        for (int x = 0; x < GridManager.Instance.grid.width; x ++) {
+            for (int y = 0; y < GridManager.Instance.grid.height; y ++) {
+                GameObject slime = SpawnPrefab(settings.slimePrefab, new GridCell(x, y));
+                slime.GetComponent<ActivatableObject>().SetActivated(false);
+                slime.transform.SetParent(slimeParent.transform);
+            }
+        }
+
         GridManager.Instance.UpdateGridObjects();
         StateManager.Instance.SaveState();
+        
     }
 
     void Update()
@@ -95,7 +111,8 @@ public class GameManager : Singleton<GameManager>
         bool input = inputUp || inputDown || inputLeft || inputRight;
 
         // Handle State
-        if (input)
+        if (!acceptInput) {return;}
+        else if (input)
         {
             // Player Movement
             if (inputUp) { playerObject.gridObject.MoveUp(); }
@@ -105,17 +122,52 @@ public class GameManager : Singleton<GameManager>
 
             bool sceneChanged = false;
 
+            bool containsTile = false;
             foreach (BaseObject baseObject in GridManager.Instance.GetObjectsAt(playerObject.gridObject.nextCell)) {
-                // Handle Collisions
-                if (baseObject.isInteractable) {
-                    baseObject.interactionObject.OnInteract();
-                    playerObject.gridObject.nextCell = playerObject.gridObject.currentCell;
-                    sceneChanged = true;
+
+                if (baseObject.isTile == true) {
+                    containsTile = true;
+                    continue;
                 }
                 // Handle Interactions
-                else if (baseObject.isCollidable) {
+                if (baseObject.isInteractable && baseObject.activatableObject.IsActive()) {
+
+                    if (baseObject.isShell) {
+                        if (playerObject.playerObject.hasShell == false) {
+                            sceneChanged = true;
+                        } else {
+                            playerObject.gridObject.nextCell = playerObject.gridObject.currentCell;
+                        }
+                    } else if (baseObject.isSlug){
+                        if (playerObject.playerObject.hasShell == true) {
+                            sceneChanged = true;
+                            baseObject.activatableObject.SetActivated(false);
+                            playerObject.gridObject.nextCell = playerObject.gridObject.currentCell;
+                        } else {
+                            playerObject.gridObject.nextCell = playerObject.gridObject.currentCell;
+                        }
+                    
+                    } else if (baseObject.isExit){
+                        if (LevelComplete()) {
+                            sceneChanged = true;
+                            acceptInput = false;
+                            LoadNextLevel();
+                        } else {
+                            playerObject.gridObject.nextCell = playerObject.gridObject.currentCell;
+                            sceneChanged = false;
+                        }
+                    
+                    } else {
+                        playerObject.gridObject.nextCell = playerObject.gridObject.currentCell;
+                    }
+
+                    foreach(IInteractable interactable in baseObject.interactionComponents){
+                        interactable.OnInteract();
+                    }
+                }
+                // Handle Collisions
+                else if (baseObject.isCollidable && baseObject.activatableObject.IsActive()) {
                     playerObject.gridObject.nextCell = playerObject.gridObject.currentCell;
-                    break;
                 }
             }
 
@@ -124,28 +176,26 @@ public class GameManager : Singleton<GameManager>
                 playerObject.gridObject.nextCell = playerObject.gridObject.currentCell;
             }
 
+            // Collide with non-tiles
+            if (containsTile == false) {
+                playerObject.gridObject.nextCell = playerObject.gridObject.currentCell;
+            }
+
+            // Spawn Slimes
+            GenerateSlimes();
+
+            if (playerObject.gridObject.nextCell.x < playerObject.gridObject.currentCell.x) {
+                playerObject.GetComponent<PlayerAnimationObject>().facingRight = false;
+            } else if (playerObject.gridObject.nextCell.x > playerObject.gridObject.currentCell.x) {
+                playerObject.GetComponent<PlayerAnimationObject>().facingRight = true;
+            }
+
             if (playerObject.gridObject.isMoving) {
-                SpawnPrefab(settings.slimePrefab, playerObject.gridObject.currentCell);  // Spawn Slimes
                 sceneChanged = true;
             }
 
 
             if (sceneChanged) {
-
-                // Add input icons
-                if (playerObject.gridObject.isMoving) {
-                    foreach (BaseObject baseObject in GridManager.Instance.GetAdjacentObjects(playerObject.gridObject.nextCell)){
-                        if (baseObject.isInteractable) {
-                            baseObject.interactionObject.OnEnterAdjacentCell(playerObject.gridObject.nextCell);
-                        }
-                    }
-
-                    foreach (BaseObject baseObject in GridManager.Instance.GetAdjacentObjects(playerObject.gridObject.currentCell)){
-                        if (baseObject.isInteractable) {
-                            baseObject.interactionObject.OnLeaveAdjacentCell();
-                        }
-                    }
-                }
 
                 // Move objects
                 playerObject.gridObject.previousCell = playerObject.gridObject.currentCell;
@@ -160,19 +210,72 @@ public class GameManager : Singleton<GameManager>
         } else if (inputUndo)
         {
             StateManager.Instance.UndoState();
+            GridManager.Instance.UpdateGridObjects();
             animating = true;
             blendValue = 0.0f;
             
         } else if (inputReset) {
             StateManager.Instance.ResetState();
+            GridManager.Instance.UpdateGridObjects();
             animating = true;
             blendValue = 1.0f;
         }
 
     }
 
+    void LoadNextLevel() {
+
+    }
+
+    public bool LevelComplete() {
+
+        
+        foreach (BaseObject baseObject in sceneObjects) {
+            if (baseObject.activatableObject.IsActive()) {
+                if (baseObject.isShell) {
+                    return false;
+                }
+                if (baseObject.isSlug) {
+                    return false;
+                }
+            }
+        }
+
+        foreach (BaseObject baseObject in GridManager.Instance.GetObjectsAt(playerObject.gridObject.nextCell)) {
+            if (baseObject.isExit) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    void GenerateSlimes() {
+
+        if (playerObject.gridObject.isMoving) {
+            
+            
+            foreach (BaseObject baseObject in GridManager.Instance.GetObjectsAt(playerObject.gridObject.previousCell)) {
+                if (baseObject.GetComponent<SlimeSpriteObject>() != null) {
+                    baseObject.activatableObject.SetActivated(true);
+                    baseObject.GetComponent<SlimeSpriteObject>().SetNextCell(playerObject.gridObject.currentCell);
+                }
+            }
+
+            foreach (BaseObject baseObject in GridManager.Instance.GetObjectsAt(playerObject.gridObject.currentCell)) {
+                if (baseObject.GetComponent<SlimeSpriteObject>() != null) {
+                    baseObject.activatableObject.SetActivated(true);
+                    baseObject.GetComponent<SlimeSpriteObject>().SetNextCell(playerObject.gridObject.currentCell);
+                    baseObject.GetComponent<SlimeSpriteObject>().SetPreviousCell(playerObject.gridObject.previousCell);
+                }
+            }
+        }
+    }
+
     GameObject SpawnPrefab(GameObject prefab, GridCell cell) {
         GameObject newObject = Instantiate(prefab) as GameObject;
+        newObject.transform.position = cell.ToPosition();
+        newObject.GetComponent<GridObject>().nextCell = cell;
         newObject.GetComponent<GridObject>().currentCell = cell;
         newObject.GetComponent<GridObject>().previousCell = cell;
         return newObject;

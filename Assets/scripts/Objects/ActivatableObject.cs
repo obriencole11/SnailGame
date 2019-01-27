@@ -11,11 +11,11 @@ public class ActivatableObject : MonoBehaviour, IStorable
         return active;
     }
 
-    public void SetActive(bool _active) {
+    public void SetActivated(bool _active) {
         active = _active;
 
         foreach (Transform child in transform) {
-            transform.gameObject.SetActive(_active);
+            child.gameObject.SetActive(_active);
         }
     }
 
@@ -24,9 +24,13 @@ public class ActivatableObject : MonoBehaviour, IStorable
         return new List<float> { active ? 1.0f : 0.0f };
     }
 
-    public void SetData(List<float> data)
+    public void SetData(List<float> data, List<float> previousData=null)
     {
         active = data[0] == 1.0f;
+
+        foreach (Transform child in transform) {
+            child.gameObject.SetActive(active);
+        }
     }
 
     public void ApplyData(float t)

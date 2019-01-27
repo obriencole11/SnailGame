@@ -44,7 +44,7 @@ public class StateManager : Singleton<StateManager>
             }
 
             if (!inHistory) {
-                baseObject.activatableObject.SetActive(false);
+                baseObject.activatableObject.SetActivated(false);
             }
         }
 
@@ -53,26 +53,29 @@ public class StateManager : Singleton<StateManager>
 
     public void UndoState()
     {
+        if (stateHistory.Count > 1) {
 
-        stateHistory.RemoveAt(currentIndex);
-        Dictionary<IStorable, List<float>> newState = stateHistory[currentIndex];
+            stateHistory.RemoveAt(currentIndex);
 
-        foreach (KeyValuePair<IStorable, List<float>> storableState in newState)
-        {
-            storableState.Key.SetData(storableState.Value);
-        }
+            Dictionary<IStorable, List<float>> newState = stateHistory[currentIndex];
 
-        foreach (BaseObject baseObject in GameManager.Instance.sceneObjects) {
-            bool inHistory = false;
-            foreach (IStorable storable in baseObject.GetComponents<IStorable>()) {
-                if (newState.ContainsKey(storable)) {
-                    inHistory = true;
-                    break;
-                }
+            foreach (KeyValuePair<IStorable, List<float>> storableState in newState)
+            {
+                storableState.Key.SetData(storableState.Value);
             }
 
-            if (!inHistory) {
-                baseObject.activatableObject.SetActive(false);
+            foreach (BaseObject baseObject in GameManager.Instance.sceneObjects) {
+                bool inHistory = false;
+                foreach (IStorable storable in baseObject.GetComponents<IStorable>()) {
+                    if (newState.ContainsKey(storable)) {
+                        inHistory = true;
+                        break;
+                    }
+                }
+
+                if (!inHistory) {
+                    baseObject.activatableObject.SetActivated(false);
+                }
             }
         }
     }

@@ -33,7 +33,7 @@ public class GridCell
     }
 
     public static GridCell FromPosition (Vector3 position) {
-        return new GridCell((int)Mathf.Round(position.x), (int)Mathf.Round(position.y));
+        return new GridCell((int)Mathf.Round(position.x), (int)Mathf.Round(position.z));
     }
 
     public Vector3 ToPosition() {
@@ -78,9 +78,18 @@ public class GridManager : Singleton<GridManager>
     public Grid grid;
     public List<BaseObject>[,] gridContents;
 
-    public List<BaseObject> GetObjectsAt (GridCell cell) {
+    public List<BaseObject> GetObjectsAt (GridCell cell, bool active = false) {
         if (CellExists(cell)) {
-            return gridContents[cell.x, cell.y];
+            List<BaseObject> contents = new List<BaseObject>();
+            foreach (BaseObject baseObject in gridContents[cell.x, cell.y]) {
+                if (active && baseObject.activatableObject.IsActive()) {
+                    contents.Add(baseObject);
+                } else if (!active) {
+                    contents.Add(baseObject);
+                }
+            }
+            return contents;
+            
         } else {
             return new List<BaseObject>();
         }
@@ -129,12 +138,9 @@ public class GridManager : Singleton<GridManager>
 
             // Only grab objects on grid that are activatable
             if (baseObject.isActivatable && baseObject.hasGridObject) {
-                // Only grab active objects
-                if (baseObject.activatableObject.IsActive()) {
 
-                    // Add them to the dictionary with their cell as the key
-                    gridContents[baseObject.gridObject.currentCell.x, baseObject.gridObject.currentCell.y].Add(baseObject);
-                }
+                // Add them to the dictionary with their cell as the key
+                gridContents[baseObject.gridObject.currentCell.x, baseObject.gridObject.currentCell.y].Add(baseObject);
             }
         }
     }
