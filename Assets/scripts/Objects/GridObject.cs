@@ -47,10 +47,14 @@ public class GridObject : MonoBehaviour, IStorable
         return new List<float>{(float)currentCell.x, (float)currentCell.y};
     }
 
-    public void SetData(List<float> newData)
+    public void SetData(List<float> newData, List<float> previousData = null)
     {
-        previousCell = currentCell;
         currentCell = new GridCell((int)newData[0], (int)newData[1]);
+        if (previousData != null) {
+            previousCell = new GridCell((int)previousData[0], (int)previousData[1]);
+        } else {
+            previousCell = currentCell;
+        }
     }
 
     public void ApplyData(float t = 1.0f)
