@@ -205,7 +205,12 @@ public class GameManager : Singleton<GameManager>
             loadTimer += Time.deltaTime;
             if (loadTimer > 3.0f) {
                 int i = Application.loadedLevel;
-                SceneManager.LoadScene(i + 1);
+
+                if (i >= SceneManager.sceneCount) {
+                    Application.Quit();
+                } else {
+                    SceneManager.LoadScene(i + 1);
+                }
             }
         }
 
