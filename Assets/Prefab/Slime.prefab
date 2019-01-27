@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 2841686395489294538}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3900014366573373516}
   m_RootOrder: 0
@@ -48,7 +48,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: ad2c0253ae1a44bab9f999c8d17691b6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -68,7 +68,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 2fb39d7bc4d794854a09c52fe55ea033, type: 3}
+  m_Sprite: {fileID: 21300000, guid: face5abd3ea824ba185a11875e38f5ef, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -130,9 +130,11 @@ MonoBehaviour:
   activatableObject: {fileID: 0}
   gridObject: {fileID: 0}
   collisionObject: {fileID: 0}
-  attachmentObject: {fileID: 0}
-  interactionObject: {fileID: 0}
   playerObject: {fileID: 0}
+  tileObject: {fileID: 0}
+  slugObject: {fileID: 0}
+  shellObject: {fileID: 0}
+  exitObject: {fileID: 0}
 --- !u!114 &397087121305350294
 MonoBehaviour:
   m_ObjectHideFlags: 0
