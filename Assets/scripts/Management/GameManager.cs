@@ -81,6 +81,15 @@ public class GameManager : Singleton<GameManager>
     float fadeInTimer = 0.0f;
 
     void Awake() {
+
+        int width = 1920; // or something else
+        int height= 1080; // or something else
+        bool isFullScreen = false; // should be windowed to run in arbitrary resolution
+        int desiredFPS = 60; // or something else
+    
+        Screen.SetResolution (width , height, isFullScreen, desiredFPS );
+
+
         settings = Resources.Load<SettingsAsset>("DefaultSettings");
 
         if (Application.loadedLevel == 0) {
@@ -206,7 +215,7 @@ public class GameManager : Singleton<GameManager>
             if (loadTimer > 3.0f) {
                 int i = Application.loadedLevel;
 
-                if (i >= SceneManager.sceneCount) {
+                if (i >= SceneManager.sceneCountInBuildSettings) {
                     Application.Quit();
                 } else {
                     SceneManager.LoadScene(i + 1);
