@@ -215,7 +215,7 @@ public class GameManager : Singleton<GameManager>
             if (loadTimer > 3.0f) {
                 int i = Application.loadedLevel;
 
-                if (i >= SceneManager.sceneCountInBuildSettings) {
+                if (i + 1 >= SceneManager.sceneCountInBuildSettings) {
                     Application.Quit();
                 } else {
                     SceneManager.LoadScene(i + 1);
